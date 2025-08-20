@@ -172,7 +172,7 @@ namespace Round
 				Door d = r.GetDoor(1);
 				if(d != NULL) d.SetLockState(0);
 				
-				if(connPlayers.size() >= 12) // Mask 035 spawn
+				if(connPlayers.size() >= 4) // Mask 035 spawn
 				{
 					Mask035 = world.CreateObject(227, r);
 					Mask035.SetTouchable(true);

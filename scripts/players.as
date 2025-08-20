@@ -302,6 +302,7 @@ void UpdatePlayerRole(Player p)
 					playerInfo.triggeredPlayers[dest.GetIndex()].SetAttach(dest);
 					playerInfo.hasGUI = true;
 					audio.PlaySoundForPlayer(dest, "SFX\\SCP\\096\\Triggered.ogg");
+					dest.SendMessage("Ты увидел его лицо! 'Так вот как он выглядит...'");
 				}
 				else if(destInfo.triggeredPlayers[p.GetIndex()] != NULL) {
 					destInfo.triggeredPlayers[p.GetIndex()].Remove();
@@ -542,8 +543,8 @@ void EndPlayerIntercom(Player p)
 
 void KillPlayer(Player dest, Player killer, string reason = "")
 {
-	if(killer != NULL) chat.Send(killer.GetName() + " killed " + dest.GetName() + " " + reason);
-	else if(reason != "") chat.Send(dest.GetName() + " died " + reason);
+	//if(killer != NULL) chat.Send(killer.GetName() + " killed " + dest.GetName() + " " + reason);
+	//else if(reason != "") chat.Send(dest.GetName() + " died " + reason);
 	dest.Kill();
 }
 
@@ -984,6 +985,29 @@ namespace PlayerCallbacks
 
 	bool OnChat(Player player, string message)
 	{
+
+		chat.SendPlayer(player, player.GetName() + " " + message);
+
+		for(int i = 0; i < connPlayers.size(); i++) 
+			{
+				Player dest = connPlayers[i];
+				info_Player@ destInfo = GetPlayerInfo(dest);
+				if(dest.IsDead()){
+					if(dest != player){
+						chat.SendPlayer(dest, player.GetName() + ": " + message);
+					}
+				}
+				else if(
+					!player.IsDead() && 
+					!dest.IsDead() && 
+					player.GetRoom().IsAdjacent(dest.GetRoom())
+				){
+					if(dest != player){
+						chat.SendPlayer(dest, player.GetName() + ": " + message);
+					}
+				}
+			}
+
 		if(message.substr(0, 1) == "/") 
 		{
 			info_Player@ playerInfo = GetPlayerInfo(player);
@@ -1061,7 +1085,7 @@ namespace PlayerCallbacks
 			return false;
 		}
 		
-		return true;
+		return false;
 	}
 
 	void OnHitPlayer(Player p, Player hit, int mouse, float distance)
@@ -1245,17 +1269,18 @@ namespace PlayerCallbacks
 	bool OnShootPlayer(Player src, Player dest, float x, float y, float z, float damage, bool headshot)
 	{
 		dest.SendDamage(src, damage, headshot, x, y, z);
-		if(IsPlayerFriend(src, dest) && !Round::GetSettings().friendlyfire) return false;
+		//if(IsPlayerFriend(src, dest) && !Round::GetSettings().friendlyfire) return false;
 		info_Player@ destInfo = GetPlayerInfo(dest);
 		damage *= (@destInfo.pClass != null) ? destInfo.pClass.damagemultiplier : 1.0;
 		dest.SetInjuries(dest.GetInjuries() + damage);
 		if(dest.GetInjuries() >= 8.0 - damage) {
-			if(IsPlayerFriend(src, dest) && Round::GetSettings().friendlyfirePunish) {
-				KillPlayer(src, NULL);
-				chat.SendPlayer(src, "You are being punished for killing an teammate.");
-				chat.Send(src.GetName() + " killed " + dest.GetName() + " but was punished");
-			}
-			else KillPlayer(dest, src, headshot ? "in head" : "");
+			//if(IsPlayerFriend(src, dest) && Round::GetSettings().friendlyfirePunish) {
+			//	KillPlayer(src, NULL);
+			//	chat.SendPlayer(src, "You are being punished for killing an teammate.");
+			//	chat.Send(src.GetName() + " killed " + dest.GetName() + " but was punished");
+			//}
+			//else 
+			KillPlayer(dest, src, headshot ? "in head" : "");
 		}
 
 		return false;
@@ -1452,6 +1477,13 @@ namespace PlayerCallbacks
 			p.SetBloodloss(0.0);
 			p.SendMessage("msg::aid.stopall", 6.0, true);
 			return false;
+		}
+
+		if (item.GetTemplateIndex() == it_scp500pill)
+		{
+			p.SetInjuries(0.0);
+			p.SetBloodloss(0.0);
+			p.Console("heal");
 		}
 		return true;
 	}

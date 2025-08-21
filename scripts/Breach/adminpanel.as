@@ -258,7 +258,7 @@ namespace AdminPanel
 							chat.SendPlayer(p, "You can't use it on this player");
 							return;
 						}
-						p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::GiveRole, "Give role", "Enter role index:", "Enter", "Cancel");
+						PlayerPanelControl::ShowRoleSelection(p);
 						break;
 					}
 					case 3:
@@ -342,6 +342,28 @@ namespace AdminPanel
 			
 		namespace PlayerPanelControl
 		{
+			void ShowRoleSelection(Player p)
+			{
+				string roleList = "";
+				int roleCount = 0;
+				
+				for(int i = 0; ; i++) {
+					Role@ role = Roles::GetRole(i);
+					if(@role == null) break;
+					
+					if(roleCount > 0) roleList += "\n";
+					roleList += role.GetFormatColor() + role.name;
+					roleCount++;
+				}
+				
+				if(roleCount > 0) {
+					p.ShowDialog(DIALOG_TYPE_LIST, GiveRole, "Select role", roleList, "Give", "Cancel");
+				} else {
+					chat.SendPlayer(p, "No roles available!");
+					ShowPlayer(p);
+				}
+			}
+			
 			void ContinueBan(Player p, bool result, string input, int item)
 			{
 				if(!result || input.findFirst(":::") >= 0) { ShowPlayer(p); return; }
@@ -389,7 +411,7 @@ namespace AdminPanel
 			{
 				if(!result) { ShowPlayer(p); return; }
 				if(GetPanelPlayer(p) != NULL) {
-					Role@ role = Roles::Find(parseInt(input));
+					Role@ role = Roles::GetRole(item);
 					if(@role != null) {
 						SetPlayerRole(GetPanelPlayer(p), role);
 						chat.SendPlayer(p, role.name + " has been successfully given to " + GetPanelPlayer(p).GetName());
@@ -504,7 +526,7 @@ namespace AdminPanel
 						p.ShowDialog(DIALOG_TYPE_MESSAGE, TeleportEveryone, "Teleport everyone", "Are you really sure to teleport everyone?", "Yes", "Cancel");
 						break;
 					case 1:
-						p.ShowDialog(DIALOG_TYPE_INPUT, TeleportPTOP, "Teleport player to player", "Enter player index and player index. Example [1 2]", "Enter", "Cancel");
+						ShowPlayerListForTeleport(p, true); // true означает выбор первого игрока
 						break;
 					case 2:
 						p.ShowDialog(DIALOG_TYPE_INPUT, Unban, "Unban player", "Enter IP or SteamID", "Unban", "Cancel");
@@ -560,6 +582,100 @@ namespace AdminPanel
 				}
 				else chat.SendPlayer(p, "Can't find banned player");
 				ShowControl(p);
+			}
+			
+			// Новые функции для улучшенной телепортации игрок к игроку
+			void ShowPlayerListForTeleport(Player p, bool selectingFirst)
+			{
+				string playerList = "";
+				string playerData = "";
+				int playerCount = 0;
+				
+				// Создаем список всех подключенных игроков
+				for(int i = 0; i < connPlayers.size(); i++) {
+					Player player = connPlayers[i];
+					if(player != NULL) {
+						if(playerCount > 0) {
+							playerList += "\n";
+							playerData += "|";
+						}
+						playerList += "[" + player.GetIndex() + "] " + player.GetName();
+						playerData += player.GetIndex() + ":" + player.GetName() + ":" + player.GetSteamID();
+						playerCount++;
+					}
+				}
+				
+				if(playerCount > 0) {
+					// Сохраняем данные игроков и флаг выбора в DialogData
+					p.SetDialogData((selectingFirst ? "FIRST" : "SECOND") + ":::" + playerData);
+					
+					string title = selectingFirst ? "Select player to teleport" : "Select destination player";
+					p.ShowDialog(DIALOG_TYPE_LIST, SelectPlayerForTeleport, title, playerList, "Select", "Cancel");
+				} else {
+					chat.SendPlayer(p, "No players online!");
+					ShowControl(p);
+				}
+			}
+			
+			void SelectPlayerForTeleport(Player p, bool result, string input, int item)
+			{
+				if(!result) { ShowControl(p); return; }
+				
+				string dialogData = p.GetDialogData();
+				array<string>@ mainParts = dialogData.split(":::");
+				if(mainParts.size() < 2) {
+					ShowControl(p);
+					return;
+				}
+				
+				bool selectingFirst = (mainParts[0] == "FIRST");
+				array<string>@ playerDataArray = mainParts[1].split("|");
+				
+				if(item >= 0 && item < playerDataArray.size()) {
+					array<string>@ selectedPlayerData = playerDataArray[item].split(":");
+					if(selectedPlayerData.size() >= 3) {
+						int selectedIndex = parseInt(selectedPlayerData[0]);
+						string selectedName = selectedPlayerData[1];
+						string selectedSteamID = selectedPlayerData[2];
+						
+						if(selectingFirst) {
+							// Сохраняем данные первого игрока и показываем список для второго
+							p.SetDialogData("SELECTED_FIRST:::" + selectedIndex + ":" + selectedName + ":" + selectedSteamID);
+							ShowPlayerListForTeleport(p, false);
+						} else {
+							// У нас есть оба игрока, выполняем телепортацию
+							string firstPlayerData = p.GetDialogData();
+							array<string>@ firstParts = firstPlayerData.split(":::");
+							if(firstParts.size() >= 2) {
+								array<string>@ firstPlayerInfo = firstParts[1].split(":");
+								if(firstPlayerInfo.size() >= 3) {
+									int firstIndex = parseInt(firstPlayerInfo[0]);
+									string firstName = firstPlayerInfo[1];
+									
+									Player firstPlayer = GetPlayer(firstIndex);
+									Player secondPlayer = GetPlayer(selectedIndex);
+									
+									if(firstPlayer != NULL && secondPlayer != NULL) {
+										// Проверяем, что SteamID совпадают (для безопасности)
+										if(firstPlayer.GetSteamID() == firstPlayerInfo[2] && 
+										   secondPlayer.GetSteamID() == selectedSteamID) {
+											
+											Entity destEnt = secondPlayer.GetEntity();
+											firstPlayer.SetPosition(destEnt.PositionX(), destEnt.PositionY(), destEnt.PositionZ(), secondPlayer.GetRoom());
+											
+											chat.SendPlayer(p, firstName + " has been successfully teleported to " + selectedName);
+										} else {
+											chat.SendPlayer(p, "Player data mismatch! Please try again.");
+										}
+									} else {
+										chat.SendPlayer(p, "One or both players are no longer online!");
+									}
+								}
+							}
+							ShowControl(p);
+						}
+					}
+				}
 			}
 		}
 		

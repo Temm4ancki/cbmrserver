@@ -641,14 +641,14 @@ namespace Roles
 		Add(scp173);
 		Add(scp049);
 		Add(scp106);
-		Add(scp939);
-		Add(scp966);
+		//Add(scp939);
+		//Add(scp966);
 		Add(scp096);
 		Add(scp0492);
 		Add(scp0492_guard);
 		Add(scp035);
-		Add(scp999);
-		Add(scp860);
+		//Add(scp999);
+		//Add(scp860);
 		Add(GOC);
 		Add(Ghost);
 		

@@ -302,9 +302,10 @@ void UpdatePlayerRole(Player p)
 					playerInfo.triggeredPlayers[dest.GetIndex()].SetAttach(dest);
 					playerInfo.hasGUI = true;
 					audio.PlaySoundForPlayer(dest, "SFX\\SCP\\096\\Triggered.ogg");
-					dest.SendMessage("Ты увидел его лицо! 'Так вот как он выглядит...'");
+					dest.SendMessage("Ты увидел его лицо...");
 				}
-				else if(destInfo.triggeredPlayers[p.GetIndex()] != NULL) {
+
+				if(dest.IsDead() && destInfo.triggeredPlayers[p.GetIndex()] != NULL) {
 					destInfo.triggeredPlayers[p.GetIndex()].Remove();
 					destInfo.triggeredPlayers[p.GetIndex()] = NULL;
 				}
@@ -421,7 +422,7 @@ void CreateRoleMessage(Player p)
 	SetTimerHandle(timerData, p);
 	playerInfo.roleTimer = CreateTimer(SetRoleTextOpacity, 5000, false, timerData);
 	
-	playerInfo.pYouAre[0] = graphics.CreateText(p, 8, "&col[ffffff]YOU ARE &colr[" + playerRole.color.R() + " " + playerRole.color.G() + " " + playerRole.color.B() +"]" + playerRole.name, 0.5, 0.15, true);
+	playerInfo.pYouAre[0] = graphics.CreateText(p, 8, "&col[ffffff]ВАША РОЛЬ: &colr[" + playerRole.color.R() + " " + playerRole.color.G() + " " + playerRole.color.B() +"]" + playerRole.name, 0.5, 0.15, true);
 	playerInfo.pYouAre[1] = graphics.CreateText(p, 8, "&col[ffffff] " + playerRole.rTask, 0.5, 0.2, true);
 	
 	//chat.Send(p.GetName() + " is a &colr[" + playerRole.color.R() + " " + playerRole.color.G() + " " + playerRole.color.B() +"]" + playerRole.name);
@@ -829,22 +830,21 @@ namespace PlayerTimers
 		
 		if(hit == NULL || p.GetEntity().Distance(hit.GetEntity()) > 1.5)
 		{
-			p.SendMessage("You are too far away from the player.");
+			p.SendMessage("Ты находишься слишком далеко от человека.");
 			return;
 		}
 		
 		if(hit.GetAttach(ATTACH_WRIST) != WEAPON_CUFFED_ATTACHMODEL) {
-			p.SendMessage("The player already uncuffed.");
+			p.SendMessage("Этот человек уже раскован.");
 			return;
 		}
 
-		if(isAttempt && rand(1, 100) > 25) 
-		{
-			p.SendMessage("The attempt failed, try again.");
+		if(isAttempt && rand(1, 100) > 25) {
+			p.SendMessage("У тебя не получилось расковать человека, попробуй ещё раз.");
 			return;
 		}
 		
-		p.SendMessage(isAttempt ? "You've successfully uncuffed the player." : "You've uncuffed the player.");
+		p.SendMessage(isAttempt ? "Ты смог расковать человека." : "Ты расковал человека.");
 		
 		if(!isAttempt) 
 		{
@@ -853,7 +853,7 @@ namespace PlayerTimers
 		}
 		else audio.Play3DSound("SFX\\Weapons\\Handcuffs\\deploy.ogg", hit, 8.0, 0.8);
 		
-		hit.SendMessage("You've been uncuffed");
+		hit.SendMessage("Ты был раскован");
 		
 		hit.SetAttach(ATTACH_WRIST, 0);
 		GetPlayerInfo(hit).cuffer = NULL;
@@ -871,18 +871,18 @@ namespace PlayerTimers
 		
 		if(hit == NULL || p.GetEntity().Distance(hit.GetEntity()) > 1.5)
 		{
-			p.SendMessage("You are too far away from the player.");
+			p.SendMessage("Ты находишься слишком далеко от человека.");
 			return;
 		}
 		
 		if(hit.GetAttach(ATTACH_WRIST) == WEAPON_CUFFED_ATTACHMODEL) {
-			p.SendMessage("The player already cuffed.");
+			p.SendMessage("Этот человек уже раскован.");
 			return;
 		}
 
 		hit.SetAttach(ATTACH_WRIST, WEAPON_CUFFED_ATTACHMODEL);
 		GetPlayerInfo(hit).cuffer = p;
-		hit.SendMessage("You've been cuffed by " + p.GetName() + ".");
+		hit.SendMessage("Ты был закован игроком " + p.GetName() + ".");
 		
 		for(int i = 0; i < MAX_PLAYER_INVENTORY; i++) {
 			Items it = hit.GetInventory(i);
@@ -890,7 +890,7 @@ namespace PlayerTimers
 		}
 
 		p.GetAttachItem(ATTACH_WEAPON).Remove();
-		p.SendMessage("You've cuffed the player.");
+		p.SendMessage("Ты заковал человека.");
 	}
 
 	void CorpseAction(Corpse c, float timer, int remove)
@@ -986,7 +986,7 @@ namespace PlayerCallbacks
 	bool OnChat(Player player, string message)
 	{
 
-		chat.SendPlayer(player, player.GetName() + " " + message);
+		chat.SendPlayer(player, player.GetName() + ": " + message);
 
 		for(int i = 0; i < connPlayers.size(); i++) 
 			{
@@ -1025,12 +1025,12 @@ namespace PlayerCallbacks
 					if(!player.IsDead()) {
 						const string[] phrases =
 						{
-							"died of a heart attack",
-							"decided to gnaw their veins",
-							"forgot how to breathe",
-							"died of diarrhea",
-							"slipped and hit his head",
-							"took a nap"
+							"погиб от сердечного приступа.",
+							"решил вскрыть свои вены.",
+							"подавился насмерть.",
+							"прокусил язы.",
+							"подскользнулся и ударился затылком.",
+							"потерял сознание."
 						};
 						
 						chat.Send(player.GetName() + " " + phrases[rand(0, phrases.size() - 1)]);
@@ -1061,11 +1061,11 @@ namespace PlayerCallbacks
 								
 								playerInfo.linkedPlayer = GetPlayer(playerid);
 								if(playerInfo.linkedPlayer != NULL && GetPlayerInfo(playerInfo.linkedPlayer).linkedPlayer != player) {
-									playerInfo.linkedPlayer.SendMessage("You have been captured by a player.");
-									player.SendMessage("You have captured a player.");
+									playerInfo.linkedPlayer.SendMessage("Ты был захвачен игроком.");
+									player.SendMessage("Ты захватил игрока.");
 								}
 								else {
-									player.SendMessage("Can't capture or find a player");
+									player.SendMessage("Невозможно захватить или найти игрока.");
 									playerInfo.linkedPlayer = NULL;
 								}
 							}
@@ -1074,14 +1074,14 @@ namespace PlayerCallbacks
 							playerInfo.linkedPlayer.Desync(false);
 							playerInfo.linkedPlayer.SetAnimation(0);
 							playerInfo.linkedPlayer = NULL;
-							player.SendMessage("You left the player.");
+							player.SendMessage("Ты покинул игрока.");
 						}
 					}
 					return false;
 				}
 			}
 			
-			chat.SendPlayer(player, "Unknown command.");
+			chat.SendPlayer(player, "Неизвестная команда.");
 			return false;
 		}
 		
@@ -1091,6 +1091,7 @@ namespace PlayerCallbacks
 	void OnHitPlayer(Player p, Player hit, int mouse, float distance)
 	{
 		info_Player@ playerInfo = GetPlayerInfo(p);
+		info_Player@ hitInfo = GetPlayerInfo(hit);
 		if((mouse & 1 != 0))
 		{
 			if(@playerInfo.pClass != null && playerInfo.pClass.hitTime > 0.0 && distance < 1.5 && playerInfo.hitElement == NULL && ROUND_TIME - Round::GetTimer() >= SCP_TIMEOUT) 
@@ -1151,7 +1152,7 @@ namespace PlayerCallbacks
 									Items it = hit.GetInventory(i);
 									if(it != NULL && (it.GetTemplateIndex() == it_scp714 || it.GetTemplateIndex() == it_fine714)) { 
 										it.SetPicker(NULL);
-										hit.SendMessage("SCP-049 took off your ring");
+										hit.SendMessage("SCP-049 снял твоё кольцо.");
 										break;
 									}
 								}
@@ -1162,7 +1163,7 @@ namespace PlayerCallbacks
 									Items it = hit.GetInventory(i);
 									if(it != NULL && (it.GetTemplateIndex() == it_hazmatsuit || it.GetTemplateIndex() == it_finehazmatsuit || it.GetTemplateIndex() == it_veryfinehazmatsuit || it.GetTemplateIndex() == it_hazmatsuit148)) { 
 										it.SetPicker(NULL);
-										hit.SendMessage("SCP-049 took off your hazmat suit");
+										hit.SendMessage("SCP-049 снял твой защитный костюм.");
 										break;
 									}
 								}
@@ -1200,31 +1201,41 @@ namespace PlayerCallbacks
 				return;
 			}
 			
-			if(distance < 1.5 && playerInfo.cuffElement == NULL) 
+		if(distance < 1.5 && playerInfo.cuffElement == NULL) 
 			{
 				if(p.GetAttach(ATTACH_WEAPON) == WEAPON_CUFFS_ATTACHMODEL && p.GetAttachItem(ATTACH_WEAPON) != NULL) {
 					if(hit.GetAttach(ATTACH_WRIST) != WEAPON_CUFFED_ATTACHMODEL) {
-						info_Player@ hitInfo = GetPlayerInfo(hit);
+						info_Player@ hitPlayerInfo = GetPlayerInfo(hit);
 						if(@hitInfo.pClass == null || (hitInfo.pClass.category != CATEGORY_ANOMALY && hitInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && ((!IsPlayerFriend(p, hit) && hit.GetAttach(ATTACH_WEAPON) == 0) || p.IsAdmin())))
 						{
-							p.SendMessage("Cuffing the player...");
+							p.SendMessage("Заковываем человека...");
 							audio.Play3DSound("SFX\\Weapons\\Handcuffs\\equip.ogg", hit.GetEntity(), 8.0, 0.8);
-
 							playerInfo.cuffElement = graphics.CreateProgressBar(p, 3.0, 0.5, 0.9, 0.15, 0.015, true, "PlayerTimers::PlayerCuffPlayer");
 							playerInfo.cuffElement.SetColor(150, 150, 150);
 							playerInfo.cuffElement.SetData(formatInt(hit.GetIndex()));
 						}
-						else p.SendMessage("You can't cuff this player.");
+						else p.SendMessage("Ты не можешь заковать этого игрока.");
 					}
-					else p.SendMessage("This player already cuffed.");
+					else p.SendMessage("Этот человек уже раскован.");
 				}
 				else if(hit.GetAttach(ATTACH_WRIST) == WEAPON_CUFFED_ATTACHMODEL) {
 					bool IsCuffer = GetPlayerInfo(hit).cuffer == p;
-					p.SendMessage(IsCuffer ? "Uncuffing the player..." : "An attempt to uncuff the player...");
+					p.SendMessage(IsCuffer ? "Расковываем человека..." : "Попытка расковать человека...");
 					audio.Play3DSound("SFX\\Weapons\\Handcuffs\\equip.ogg", hit.GetEntity(), 8.0, 0.8);
 					playerInfo.cuffElement = graphics.CreateProgressBar(p, IsCuffer ? 1.0 : 5.0, 0.5, 0.9, 0.15, 0.015, true, "PlayerTimers::PlayerUncuffPlayer");
 					playerInfo.cuffElement.SetColor(150, 150, 150);
 					playerInfo.cuffElement.SetData(formatInt(hit.GetIndex()) + (IsCuffer ? "" : "."));
+				}
+				else if(p.GetAttachItem(ATTACH_WEAPON) == NULL && playerInfo.hitElement == NULL && @playerInfo.pClass != null)
+				{
+					info_Player@ targetPlayerInfo = GetPlayerInfo(hit);
+					if(@hitInfo.pClass != null && playerInfo.pClass.category != CATEGORY_ANOMALY && playerInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && hitInfo.pClass.category != CATEGORY_ANOMALY && hitInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && !IsPlayerFriend(p, hit) && !hit.GetGodmode()) {
+						audio.Play3DSound("SFX/Character/D9341/Damage" + rand(2, 4) + ".ogg", hit.GetEntity(), 8.0, 0.8);
+						hit.SetInjuries(hit.GetInjuries() + 0.5);
+						if(hit.GetInjuries() >= 8.0) KillPlayer(hit, p);
+						PlayPlayerAnimation(p, PLAYER_MODEL_ANIMATION_IDLE_ARMED_RIFLE + 2 * rand(0, 1), 1000);
+						SetPlayerInterval(p, 1.2f);
+					}
 				}
 			}
 		}
@@ -1283,6 +1294,23 @@ namespace PlayerCallbacks
 			KillPlayer(dest, src, headshot ? "in head" : "");
 		}
 
+		if(destInfo.pClass.roleid == ROLE_SCP_096)
+		{
+			if(!destInfo.triggered)
+			{
+				dest.SetNetworkAnimation(PLAYER_MODEL_ANIMATION_IDLE_ARMED_PISTOL);
+				audio.Play3DSound("SFX\\Music\\096Angered.ogg", dest, 20.0, 0.8);
+				audio.PlaySoundForPlayer(dest, "SFX\\Music\\096Angered.ogg");
+				destInfo.triggered = true;
+				audio.PlaySoundForPlayer(src, "SFX\\SCP\\096\\Triggered.ogg");
+			}
+
+			destInfo.triggeredPlayers[src.GetIndex()] = graphics.CreateRect(dest, 0, 0, 0.012, 0.022);
+			destInfo.triggeredPlayers[src.GetIndex()].SetColor(255, 0, 0);
+			destInfo.triggeredPlayers[src.GetIndex()].SetAttach(src);
+			destInfo.hasGUI = true;
+		}
+		
 		return false;
 	}
 	bool OnExploreCorpse(Player p, Corpse c)
@@ -1332,7 +1360,7 @@ namespace PlayerCallbacks
 			SetTimerInt(timerData, 0);
 			CreateTimer(PlayerTimers::CorpseAction, 0, false, timerData);
 			c.SetExplore(false);
-			if(c.GetItemsCount() == 0) p.SendMessage("Nothing found");
+			if(c.GetItemsCount() == 0) p.SendMessage("Ничего не найдено.");
 		}
 		return true;
 	}
@@ -1386,12 +1414,12 @@ namespace PlayerCallbacks
 		info_Player@ playerInfo = GetPlayerInfo(p);
 		if(obj == IntercomButton)
 		{
-			if(@playerInfo.pClass == null || ((playerInfo.pClass.category == CATEGORY_ANOMALY || playerInfo.pClass.category == CATEGORY_ANOMALYSTALEMATE) && playerInfo.pClass.roleid != ROLE_SCP_049)) { p.SendMessage("You can't use intercom."); return; }
-			if(playerInfo.intercomTimeout > 0.0) { p.SendMessage("Wait " + int(playerInfo.intercomTimeout) + " seconds for a repeat intercom."); return; }
-			if(playerInfo.intercomTimer != 0) { p.SendMessage("You can speak"); return; }
+			if(@playerInfo.pClass == null || ((playerInfo.pClass.category == CATEGORY_ANOMALY || playerInfo.pClass.category == CATEGORY_ANOMALYSTALEMATE) && playerInfo.pClass.roleid != ROLE_SCP_049)) { p.SendMessage("Ты не можешь использовать интерком."); return; }
+			if(playerInfo.intercomTimeout > 0.0) { p.SendMessage("Жди " + int(playerInfo.intercomTimeout) + " секунд чтобы говорить в интерком."); return; }
+			if(playerInfo.intercomTimer != 0) { p.SendMessage("Ты можешь говорить в интерком."); return; }
 			
 			audio.PlaySound("SFX\\Character\\MTF\\StartAnnounc.ogg");
-			p.SendMessage("You can speak for a 20 seconds");
+			p.SendMessage("Ты можешь говорить в интерком 20 секунд.");
 			
 			int timerData = CreateTimerData();
 			SetTimerHandle(timerData, p);
@@ -1401,16 +1429,16 @@ namespace PlayerCallbacks
 		else if(obj == WarheadsButton)
 		{
 			if(!Round::IsStarted()) return;
-			if(@playerInfo.pClass == null || playerInfo.pClass.category == CATEGORY_ANOMALY || playerInfo.pClass.category == CATEGORY_ANOMALYSTALEMATE) { p.SendMessage("You can't use warheads."); return; }
-			if(ROUND_TIME * 0.5 < Round::GetTimer()) { p.SendMessage("You need to wait half a round to activate the warheads."); return; }
+			if(@playerInfo.pClass == null || playerInfo.pClass.category == CATEGORY_ANOMALY || playerInfo.pClass.category == CATEGORY_ANOMALYSTALEMATE) { p.SendMessage("Ты не можешь использовать боеголовку."); return; }
+			if(ROUND_TIME * 0.5 < Round::GetTimer()) { p.SendMessage("Тебе нужно подождать хотя-бы половину раунда чтобы использовать боеголовку."); return; }
 			if(Round::IsWarheadsEnabled()) { 
 				if(Round::GetWarheadsTimer() > 88) return; // Can't disable by accident
 				Round::EnableWarheads(false);
-				p.SendMessage("You disabled the warheads"); 
+				p.SendMessage("Ты выключил боеголовки."); 
 				return; 
 			}
-			if(Round::GetWarheadsTimer() > 0) { p.SendMessage("You need to wait " + Round::GetWarheadsTimer() + " seconds to repeat"); return; }
-			if(Round::EnableWarheads(true, 90)) p.SendMessage("Alpha Warheads has been activated!");
+			if(Round::GetWarheadsTimer() > 0) { p.SendMessage("Тебе нужно подождать " + Round::GetWarheadsTimer() + " секунд чтобы использовать."); return; }
+			if(Round::EnableWarheads(true, 90)) p.SendMessage("Альфа боеголовка была активирована!");
 			else p.SendMessage("msg::key.nothappend", 6.0, true);
 		}
 		else if(obj == Mask035)
@@ -1427,7 +1455,7 @@ namespace PlayerCallbacks
 		else if(obj == RecontainButton)
 		{
 			if(recontainState != 0 || !Round::IsStarted()) {
-				p.SendMessage("The recontainment procedure has already been completed.");
+				p.SendMessage("Процедура восстановления условий содержания была проведена успешно.");
 				return;
 			}
 			float x, y, z;
@@ -1455,7 +1483,7 @@ namespace PlayerCallbacks
 				}
 			}
 			
-			p.SendMessage("There is no suitable object in the cell.");
+			p.SendMessage("В камере восстановления содержания отсутствует субъект.");
 		}
 	}
 	bool OnUseDoorButton(Player p, Door door, Items item)

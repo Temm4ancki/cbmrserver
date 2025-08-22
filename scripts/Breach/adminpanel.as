@@ -234,7 +234,7 @@ namespace AdminPanel
 					case 0:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						string name = SplitString(p.GetDialogData(), "\n", 0);
@@ -246,7 +246,7 @@ namespace AdminPanel
 					case 1:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						p.ShowDialog(DIALOG_TYPE_MESSAGE, PlayerPanelControl::ConfirmKick, "Kick player?", "Are you sure to kick " + SplitString(p.GetDialogData(), "\n", 0) + "?", "Ban", "Cancel");
@@ -255,7 +255,7 @@ namespace AdminPanel
 					case 2:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						PlayerPanelControl::ShowRoleSelection(p);
@@ -274,7 +274,7 @@ namespace AdminPanel
 					case 5:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						p.ShowDialog(DIALOG_TYPE_MESSAGE, PlayerPanelControl::TeleportMe, "Teleport me", "Are you sure to teleport this player?", "Yes", "Cancel");
@@ -283,7 +283,7 @@ namespace AdminPanel
 					case 6:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::SetSpeed, "Set speed", "Enter speed (0.0 is default)", "Enter", "Cancel");
@@ -292,7 +292,7 @@ namespace AdminPanel
 					case 7:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::SetModel, "Set model", "Enter model ID (1-16)", "Enter", "Cancel");
@@ -301,7 +301,7 @@ namespace AdminPanel
 					case 8:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::SetTexture, "Set texture", "Enter texture ID (1-30)", "Enter", "Cancel");
@@ -310,7 +310,7 @@ namespace AdminPanel
 					case 9:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p) && GetPanelPlayer(p) != p) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::SetSize, "Set size", "Enter size (0.0 is default)", "Enter", "Cancel");
@@ -319,7 +319,7 @@ namespace AdminPanel
 					case 10:
 					{
 						if(GetAdminLevel(GetPanelPlayer(p)) >= GetAdminLevel(p)) {
-							chat.SendPlayer(p, "You can't use it on this player");
+							chat.SendPlayer(p, "Ты не можешь использовать это на игроке.");
 							return;
 						}
 						p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::GiveAdmin, "Set admin access", "Enter admin level access (0 - remove)", "Enter", "Cancel");
@@ -357,9 +357,9 @@ namespace AdminPanel
 				}
 				
 				if(roleCount > 0) {
-					p.ShowDialog(DIALOG_TYPE_LIST, GiveRole, "Select role", roleList, "Give", "Cancel");
+					p.ShowDialog(DIALOG_TYPE_LIST, GiveRole, "Выберите роль", roleList, "Выдать роль", "Отмена");
 				} else {
-					chat.SendPlayer(p, "No roles available!");
+					chat.SendPlayer(p, "Нет доступных ролей!");
 					ShowPlayer(p);
 				}
 			}
@@ -373,7 +373,7 @@ namespace AdminPanel
 				string name = SplitString(p.GetDialogData(), "\n", 0);
 				string steamid = SplitString(p.GetDialogData(), "\n", 2);
 				string ip = SplitString(p.GetDialogData(), "\n", 3);
-				p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::ConfirmBan, "Ban player confirmation", "Player: " + name + "\nSteam ID: " + steamid + "\nIP Address: " + ip +"\nEnter ban time in minutes (0 - endless):", "Ban", "Cancel", false);
+				p.ShowDialog(DIALOG_TYPE_INPUT, PlayerPanelControl::ConfirmBan, "Подтверждение бана игрока", "Игрок: " + name + "\nSteam ID: " + steamid + "\nIP Адрес: " + ip +"\nВведите время бана в минутах (0 - перманент):", "Забанить", "Отмена", false);
 			}
 			
 			void ConfirmBan(Player p, bool result, string input, int item)
@@ -387,7 +387,7 @@ namespace AdminPanel
 				string IP = SplitString(p.GetDialogData(), "\n", 3);
 				GlobalBans.Push(SplitString(p.GetDialogData(), "\n", 2), IP, reason, minutes != 0 ? datetime().time + (60 * minutes) : 0);
 				GlobalBans.Save();
-				chat.Send("&colr[200 0 0]Administrator &r[]" + p.GetName() + "&r[] banned " + SplitString(p.GetDialogData(), "\n", 0) + " for " + minutes + " min. Reason: " + reason);
+				chat.Send("&colr[200 0 0]Администратор &r[]" + p.GetName() + "&r[] забанил " + SplitString(p.GetDialogData(), "\n", 0) + " на " + minutes + " минут. Причина: " + reason);
 
 				for(int i = connPlayers.size() - 1; i >= 0; i--) {
 					if(connPlayers[i].GetIP() == IP) { 
@@ -403,7 +403,7 @@ namespace AdminPanel
 				if(GetPanelPlayer(p) != NULL)
 				{
 					GetPanelPlayer(p).Kick(CODE_KICKED);
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 				}
 			}
 			
@@ -414,9 +414,9 @@ namespace AdminPanel
 					Role@ role = Roles::GetRole(item);
 					if(@role != null) {
 						SetPlayerRole(GetPanelPlayer(p), role);
-						chat.SendPlayer(p, role.name + " has been successfully given to " + GetPanelPlayer(p).GetName());
+						chat.SendPlayer(p, role.name + " был выдан игроку " + GetPanelPlayer(p).GetName());
 					}
-					else chat.SendPlayer(p, "Role doesn't exist!");
+					else chat.SendPlayer(p, "Роли не существует!");
 				}
 				ShowPlayer(p);
 			}
@@ -428,9 +428,9 @@ namespace AdminPanel
 					Items it = world.CreateItem(input);
 					if(it != NULL) {
 						it.SetPicker(GetPanelPlayer(p));
-						chat.SendPlayer(p, it.GetTemplateName() + " has been successfully given to " + GetPanelPlayer(p).GetName());
+						chat.SendPlayer(p, it.GetTemplateName() + " был выдан игроку " + GetPanelPlayer(p).GetName());
 					}
-					else chat.SendPlayer(p, "Item doesn't exist!");
+					else chat.SendPlayer(p, "Предмета не существует!");
 				}
 				ShowPlayer(p);
 			}
@@ -441,7 +441,7 @@ namespace AdminPanel
 				if(GetPanelPlayer(p) != NULL) {
 					Entity destEnt = GetPanelPlayer(p).GetEntity();
 					p.SetPosition(destEnt.PositionX(), destEnt.PositionY(), destEnt.PositionZ(), GetPanelPlayer(p).GetRoom());
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 				}
 			}
 			
@@ -451,7 +451,7 @@ namespace AdminPanel
 				if(GetPanelPlayer(p) != NULL) {
 					Entity destEnt = p.GetEntity();
 					GetPanelPlayer(p).SetPosition(destEnt.PositionX(), destEnt.PositionY(), destEnt.PositionZ(), p.GetRoom());
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 				}
 			}
 			
@@ -460,7 +460,7 @@ namespace AdminPanel
 				if(!result) { ShowPlayer(p); return; }
 				if(input.length() > 0 && GetPanelPlayer(p) != NULL) {
 					GetPanelPlayer(p).SetSpeedMultiplier(parseFloat(input));
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 					ShowPlayer(p);
 				}
 			}
@@ -470,7 +470,7 @@ namespace AdminPanel
 				if(!result) { ShowPlayer(p); return; }
 				if(input.length() > 0 && GetPanelPlayer(p) != NULL) {
 					GetPanelPlayer(p).SetModelSize(parseFloat(input));
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 					ShowPlayer(p);
 				}
 			}
@@ -480,7 +480,7 @@ namespace AdminPanel
 				if(!result) { ShowPlayer(p); return; }
 				if(input.length() > 0 && GetPanelPlayer(p) != NULL) {
 					GetPanelPlayer(p).SetModel(parseInt(input));
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 					ShowPlayer(p);
 				}
 			}
@@ -490,7 +490,7 @@ namespace AdminPanel
 				if(!result) { ShowPlayer(p); return; }
 				if(input.length() > 0 && GetPanelPlayer(p) != NULL) {
 					GetPanelPlayer(p).SetModelTexture(parseInt(input));
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 					ShowPlayer(p);
 				}
 			}
@@ -500,12 +500,12 @@ namespace AdminPanel
 				if(!result) { ShowPlayer(p); return; }
 				if(input.length() > 0 && GetPanelPlayer(p) != NULL) {
 					if(GetAdminLevel(p) <= parseInt(input)) {
-						chat.SendPlayer(p, "You can't set this level");
+						chat.SendPlayer(p, "Ты не можешь выставить этот уровень.");
 						return;
 					}
 						
 					SetAdmin(parseInt(GetPanelPlayer(p).GetSteamID()), parseInt(input), true);
-					chat.SendPlayer(p, "You set " + parseInt(input) + " administrator level for " + GetPanelPlayer(p).GetName());
+					chat.SendPlayer(p, "Ты выставил уровень администратора " + parseInt(input) + " игроку " + GetPanelPlayer(p).GetName());
 				}
 			}
 		}
@@ -514,7 +514,7 @@ namespace AdminPanel
 		{
 			void ShowControl(Player p)
 			{
-				p.ShowDialog(DIALOG_TYPE_LIST, PlayersControl, "Players control", "Teleport everyone to you\nTeleport player to player\nUnban player\nUse players list to control (P)" , "Select", "Back");
+				p.ShowDialog(DIALOG_TYPE_LIST, PlayersControl, "Панель игроков", "Телепортировать всех к себе\nТелепортировать игрока к другому\nРазбанить игрока\nИспользовать список игроков (P)" , "Выбрать", "Назад");
 			}
 			
 			void PlayersControl(Player p, bool result, string input, int item)
@@ -523,13 +523,13 @@ namespace AdminPanel
 				
 				switch(item) {
 					case 0: 
-						p.ShowDialog(DIALOG_TYPE_MESSAGE, TeleportEveryone, "Teleport everyone", "Are you really sure to teleport everyone?", "Yes", "Cancel");
+						p.ShowDialog(DIALOG_TYPE_MESSAGE, TeleportEveryone, "Телепортировать всех к себе", "Точно телепортировать всех к себе?", "Да", "Отмена");
 						break;
 					case 1:
 						ShowPlayerListForTeleport(p, true); // true означает выбор первого игрока
 						break;
 					case 2:
-						p.ShowDialog(DIALOG_TYPE_INPUT, Unban, "Unban player", "Enter IP or SteamID", "Unban", "Cancel");
+						p.ShowDialog(DIALOG_TYPE_INPUT, Unban, "Разбанить игрока", "Введите IP или SteamID", "Разбанить", "Отмена");
 						break;
 				}
 			}
@@ -541,7 +541,7 @@ namespace AdminPanel
 					Entity destEnt = p.GetEntity();
 					connPlayers[i].SetPosition(destEnt.PositionX(), destEnt.PositionY(), destEnt.PositionZ(), p.GetRoom());
 				}
-				chat.SendPlayer(p, "Success!");
+				chat.SendPlayer(p, "Успешно!");
 			}
 			
 			void TeleportPTOP(Player p, bool result, string input, int item)
@@ -560,7 +560,7 @@ namespace AdminPanel
 									Entity destEnt = dest2.GetEntity();
 									dest.SetPosition(destEnt.PositionX(), destEnt.PositionY(), destEnt.PositionZ(), dest2.GetRoom());
 						
-									chat.SendPlayer(p, dest.GetName() + " has been successfully teleported to " + dest2.GetName());
+									chat.SendPlayer(p, dest.GetName() + " был успешно телепортирован к " + dest2.GetName());
 									ShowControl(p);
 								}
 							}
@@ -570,17 +570,17 @@ namespace AdminPanel
 				}
 				
 				ShowControl(p);
-				chat.SendPlayer(p, "Can't find player or role");
+				chat.SendPlayer(p, "Невозможно найти игрока или роль.");
 			}
 			
 			void Unban(Player p, bool result, string input, int item)
 			{
 				if(!result) { ShowControl(p); return; }
 				if(input.findFirst(".") >= 0 ? GlobalBans.Remove("", input) : GlobalBans.Remove(input, "")) {
-					chat.SendPlayer(p, "Player successfully unbanned");
+					chat.SendPlayer(p, "Игрок успешно разбанен.");
 					GlobalBans.Save();
 				}
-				else chat.SendPlayer(p, "Can't find banned player");
+				else chat.SendPlayer(p, "Невозможно найти забанненого игрока.");
 				ShowControl(p);
 			}
 			
@@ -609,10 +609,10 @@ namespace AdminPanel
 					// Сохраняем данные игроков и флаг выбора в DialogData
 					p.SetDialogData((selectingFirst ? "FIRST" : "SECOND") + ":::" + playerData);
 					
-					string title = selectingFirst ? "Select player to teleport" : "Select destination player";
-					p.ShowDialog(DIALOG_TYPE_LIST, SelectPlayerForTeleport, title, playerList, "Select", "Cancel");
+					string title = selectingFirst ? "Выберите телепортирующегося игрока" : "Выберите конечного игрока";
+					p.ShowDialog(DIALOG_TYPE_LIST, SelectPlayerForTeleport, title, playerList, "Выбрать", "Отмена");
 				} else {
-					chat.SendPlayer(p, "No players online!");
+					chat.SendPlayer(p, "На сервере нет игроков!");
 					ShowControl(p);
 				}
 			}
@@ -663,12 +663,12 @@ namespace AdminPanel
 											Entity destEnt = secondPlayer.GetEntity();
 											firstPlayer.SetPosition(destEnt.PositionX(), destEnt.PositionY(), destEnt.PositionZ(), secondPlayer.GetRoom());
 											
-											chat.SendPlayer(p, firstName + " has been successfully teleported to " + selectedName);
+											chat.SendPlayer(p, firstName + " был успешно телепортирован к " + selectedName);
 										} else {
-											chat.SendPlayer(p, "Player data mismatch! Please try again.");
+											chat.SendPlayer(p, "Информация о игроке не совпадает! Попробуйте ещё раз.");
 										}
 									} else {
-										chat.SendPlayer(p, "One or both players are no longer online!");
+										chat.SendPlayer(p, "Одного или обеих игроков больше нет на сервере!");
 									}
 								}
 							}
@@ -729,7 +729,7 @@ namespace AdminPanel
 				if(!result) { ShowControl(p); return; }
 				if(input.length() > 0) {
 					Lobby::SetTimer(parseInt(input));
-					chat.SendPlayer(p, "Success!");
+					chat.SendPlayer(p, "Успешно!");
 				}
 			}
 			

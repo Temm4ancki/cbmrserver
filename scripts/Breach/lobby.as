@@ -5,8 +5,8 @@ namespace Lobby
 	void Create()
 	{
 		RoundTime = graphics.CreateText(NULL, 10, "00:00", 0.945, 0.017);
-		LobbyGUI[0] = graphics.CreateText(NULL, 8, "&col[ffffff]WAITING FOR PLAYERS", 0.5, 0.15, true);
-		LobbyGUI[1] = graphics.CreateText(NULL, 8, "NEED &col[ff0000]0 &col[ffffff]MORE PLAYERS TO START", 0.5, 0.2, true);
+		LobbyGUI[0] = graphics.CreateText(NULL, 8, "&col[ffffff]ОЖИДАНИЕ ИГРОКОВ", 0.5, 0.15, true);
+		LobbyGUI[1] = graphics.CreateText(NULL, 8, "НУЖНО ЕЩЁ &col[ff0000]0 &col[ffffff]ИГРОКОВ ДЛЯ НАЧАЛА РАУНДА", 0.5, 0.2, true);
 		LobbyGUI[0].SetShadow(true);
 		LobbyGUI[1].SetShadow(true);
 	}
@@ -64,11 +64,11 @@ namespace Lobby
 		if(!Round::IsStarted()) {
 			int c = MINIMUM_PLAYERS - GetPlayersCount();
 			if(c > 0) {
-				LobbyGUI[1].SetText("NEED &col[ff0000]" + c + " &col[ffffff]MORE PLAYERS TO START");
+				LobbyGUI[1].SetText("НУЖНО ЕЩЁ &col[ff0000]" + c + " &col[ffffff]ИГРОКОВ ДЛЯ НАЧАЛА РАУНДА");
 			}
 			else {
 				SetTimer(GetTimer() - 1);
-				LobbyGUI[1].SetText("&colr[10 200 100]" + ConvertIntToTime(GetTimer(), false) + " &col[ffffff]left before the start");
+				LobbyGUI[1].SetText("&colr[10 200 100]" + ConvertIntToTime(GetTimer(), false) + " &col[ffffff]секунд осталось до начала раунда");
 				if(GetTimer() <= 0) 
 				{
 					// Starting round

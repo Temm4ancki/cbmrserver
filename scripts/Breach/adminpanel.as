@@ -742,6 +742,7 @@ namespace AdminPanel
 			void Announce(Player p, bool result, string input, int item)
 			{
 				if(!result || input == "") { ShowControl(p); return; }
+				audio.PlaySound("SFX\\Character\\MTF\\StartAnnounc.ogg");
 				chat.Send("[Server]: " + input);
 			}
 		}

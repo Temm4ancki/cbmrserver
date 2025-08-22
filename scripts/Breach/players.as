@@ -955,7 +955,7 @@ namespace PlayerCallbacks
 		{
 			player.SetPositionBounds(NULL);
 			SetPlayerRole(player, Roles::GetRole(0));
-			audio.PlaySoundForPlayer(player, "SFX/Ending/GateA/Bell0.ogg");
+			audio.PlaySoundForPlayer(player, "SFX/Horror/Horror8.ogg"); // "SFX/Ending/GateA/Bell0.ogg"
 		}
 		else SetPlayerRole(player, null);
 		
@@ -1033,11 +1033,14 @@ namespace PlayerCallbacks
 							"потерял сознание."
 						};
 						
-						chat.Send(player.GetName() + " " + phrases[rand(0, phrases.size() - 1)]);
+						// chat.Send(player.GetName() + " " + phrases[rand(0, phrases.size() - 1)]);
+						p.SendMessage("Ты " + phrases[rand(0, phrases.size() - 1)]);
 						audio.PlaySoundForPlayer(player, "SFX\\SCP\\914\\PlayerDeath.ogg");
 						audio.Play3DSound("SFX\\SCP\\914\\PlayerDeath.ogg", player, 15.0, 0.8);
 						player.Kill(true);
 					}
+
+					return false; // https://github.com/Ne4to-podobnoe/cbmrserver/pull/3
 				}
 				
 				if(command == "panel")
@@ -1232,19 +1235,19 @@ namespace PlayerCallbacks
 					if(@hitInfo.pClass != null && playerInfo.pClass.category != CATEGORY_ANOMALY && playerInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && hitInfo.pClass.category != CATEGORY_ANOMALY && hitInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && !IsPlayerFriend(p, hit) && !hit.GetGodmode()) {
 						if(rand(0, 10) == 10) 
 						{
-							p.SendMessage("Вы промахнулись"); // непруха
-							hit.SendMessage("Вас попытались ударить");
+							p.SendMessage("Ты промахнулся"); // непруха
+							hit.SendMessage("Тебя попытались ударить");
 							return;
 						}
-						p.SendMessage("Вы ударили человека");
+						p.SendMessage("Ты ударил человека");
 						audio.Play3DSound("SFX/Character/D9341/Damage" + rand(2, 4) + ".ogg", hit.GetEntity(), 8.0, 0.8);
-						hit.SetInjuries(hit.GetInjuries() + 0.5);
+						hit.SetInjuries(hit.GetInjuries() + 0.3);
 						if(hit.GetInjuries() >= 8.0) KillPlayer(hit, p);
 						PlayPlayerAnimation(p, PLAYER_MODEL_ANIMATION_IDLE_ARMED_RIFLE + 2 * rand(0, 1), 1000);
 						SetPlayerInterval(p, 1.2f);
-						hit.SendMessage("Вас ударили");
+						hit.SendMessage("Тебя ударили");
 					}
-				}
+				} // TODO: добавить расковывание себя как в сс13 с долгим кд и с шансом неудачи
 			}
 		}
 	}

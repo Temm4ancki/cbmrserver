@@ -539,8 +539,8 @@ namespace Roles
 			Spawnpoint(vector3(0, 80.0, 0), 0.0, 0.0, world.GetRoomByIdentifier(r_cont2_860_1))
 		}, {}, true, 1.2, 6250, 0.75, true);
 		
-		Role@ scp0492 = Role(ROLE_SCP_0492, "SCP-049-2", CATEGORY_ANOMALY, PlayerModel(ZOMBIE_MODEL, {CLASS_D_ZOMBIE_TEXTURE}), Color(200, 0, 0), "Убей всех. Следуй за SCP-049", {}, {}, false, 1.0, 250, 0.75, false);
-		Role@ scp0492_guard = Role(ROLE_SCP_0492_GUARD, "SCP-049-2", CATEGORY_ANOMALY, PlayerModel(ZOMBIE_GUARD_MODEL), Color(200, 0, 0), "Убей всех. Следуй за SCP-049", {}, {}, false, 1.0, 250, 0.75, false);
+		Role@ scp0492 = Role(ROLE_SCP_0492, "SCP-049-2 (Класс-Д)", CATEGORY_ANOMALY, PlayerModel(ZOMBIE_MODEL, {CLASS_D_ZOMBIE_TEXTURE}), Color(200, 0, 0), "Убей всех. Следуй за SCP-049", {}, {}, false, 1.0, 250, 0.75, false);
+		Role@ scp0492_guard = Role(ROLE_SCP_0492_GUARD, "SCP-049-2 (Охранник)", CATEGORY_ANOMALY, PlayerModel(ZOMBIE_GUARD_MODEL), Color(200, 0, 0), "Убей всех. Следуй за SCP-049", {}, {}, false, 1.0, 250, 0.75, false);
 		Role@ scp035 = Role(ROLE_SCP_035, "SCP-035", CATEGORY_ANOMALY, PlayerModel(), Color(200, 0, 0), "Убей всех. Сбеги из фонда. Используй доверчивость окружающих.", {}, {}, false, 1.0, 500, 0.0, false);
 		
 		Role@ scp999 = Role(ROLE_SCP_999, "SCP-999", CATEGORY_ANOMALYSTALEMATE, PlayerModel(SCP_999_MODEL), Color(200, 50, 50), "Лечи людей вокруг.",
@@ -701,7 +701,7 @@ namespace Roles
 		}
 		
 		// Count roles count by players count
-		targetSingleCount = round(max(float(players.size()) / 7.9, 1.0)); // Must be minimum 1 single role
+		targetSingleCount = round(max(float(players.size()) / 6.2, 1.0)); // Must be minimum 1 single role
 		multiplier = float(players.size()) / rolesDivisor;
 
 		while(targetSingleCount > 0 && players.size() > 0 && singleRoles.size() > 0) // Assigning single roles

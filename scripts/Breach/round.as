@@ -1,7 +1,7 @@
 const int MINIMUM_PLAYERS 	= 4;
-const int LOBBY_START_TIMER = 120;
+const int LOBBY_START_TIMER = 180;
 const int ROUND_TIME		= 2100;
-const int MTF_TIMER			= 400;
+const int MTF_TIMER			= 500;
 const int SCP_TIMEOUT		= 45;
 
 GUIElement[] LobbyGUI(10);
@@ -432,7 +432,7 @@ namespace Round
 			
 			int halfCount = 15;
 			
-			if(size > 4 && rand(0, 100) <= 20) // GOC Spawn
+			if(size > 4 && rand(0, 100) <= 35) // GOC Spawn
 			{
 				assigners = { Roles::Find(ROLE_GOC) };
 				halfCount = int(max(connPlayers.size() / 6, 4));
@@ -506,10 +506,11 @@ namespace Round
 		
 		// HCZ
 		CreateItemPoint(items, world.GetRoomByIdentifier(r_room2_shaft), vector3(1930.0, 225.0, 128), "Glock");
-		if(rand(10) == 0) CreateItemPoint(items, world.GetRoomByIdentifier(r_room2_shaft), vector3(996.0, 160.0, -102), "Level 4 Key Card");
+		if(rand(0, 10) == 0) CreateItemPoint(items, world.GetRoomByIdentifier(r_room2_shaft), vector3(996.0, 160.0, -102), "Level 4 Key Card");
 		CreateItemPoint(items, world.GetRoomByIdentifier(r_room2_2_ez), vector3(800.0, -48.0, 368), rand(0, 1) == 0 ? "MP5" : "KRISS Vector");
 		CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(-1169.0, -563.0, 721), rand(0, 3) == 0 ? "Level 3 Key Card" : "Remington");
-		CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(14.0, -390, 1437), rand(0, 2) == 0 ? "Level 4 Key Card" : (rand(0, 1) == 0 ? "MP5" : "KRISS Vector"));
+		CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(14.0, -390, 1437), rand(0, 1) == 0 ? "MP5" : "KRISS Vector");
+		if(rand(0, 3) == 0) CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(14.0, -390, 1437), "Level 4 Key Card");
 		
 		world.RaycastItems();
 	}

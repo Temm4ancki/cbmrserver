@@ -579,14 +579,14 @@ namespace PlayerTimers
 			Player spectate = p.GetSpectatePlayer();
 			if(spectate != NULL) {
 				info_Player@ playerInfo_s = GetPlayerInfo(spectate);
-				playerInfo.RoleInfo.SetText(spectate.GetName() + ((@playerInfo_s.pClass != null) ? playerInfo_s.pClass.GetFormatColor() + " (" + playerInfo_s.pClass.name : " (None") + ") &r[]Status: " + GetPlayerStatus(spectate));
+				playerInfo.RoleInfo.SetText(spectate.GetName() + ((@playerInfo_s.pClass != null) ? playerInfo_s.pClass.GetFormatColor() + " (" + playerInfo_s.pClass.name : " (Никто") + ") &r[]Статус: " + GetPlayerStatus(spectate));
 				return;
 			}
 		}
 		
 		UpdatePlayerRole(p);
 		if(@playerInfo.pClass != null) {
-			playerInfo.RoleInfo.SetText(playerInfo.pClass.GetFormatColor() + playerInfo.pClass.name + ".&r[] Status: " + GetPlayerStatus(p));
+			playerInfo.RoleInfo.SetText(playerInfo.pClass.GetFormatColor() + playerInfo.pClass.name + ".&r[] Статус: " + GetPlayerStatus(p));
 		}
 		else playerInfo.RoleInfo.SetText("");
 		
@@ -1028,7 +1028,7 @@ namespace PlayerCallbacks
 							"погиб от сердечного приступа.",
 							"решил вскрыть свои вены.",
 							"подавился насмерть.",
-							"прокусил язы.",
+							"прокусил язык.",
 							"подскользнулся и ударился затылком.",
 							"потерял сознание."
 						};
@@ -1230,11 +1230,19 @@ namespace PlayerCallbacks
 				{
 					info_Player@ targetPlayerInfo = GetPlayerInfo(hit);
 					if(@hitInfo.pClass != null && playerInfo.pClass.category != CATEGORY_ANOMALY && playerInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && hitInfo.pClass.category != CATEGORY_ANOMALY && hitInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && !IsPlayerFriend(p, hit) && !hit.GetGodmode()) {
+						if(rand(0, 10) == 10) 
+						{
+							p.SendMessage("Вы промахнулись"); // непруха
+							hit.SendMessage("Вас попытались ударить");
+							return;
+						}
+						p.SendMessage("Вы ударили человека");
 						audio.Play3DSound("SFX/Character/D9341/Damage" + rand(2, 4) + ".ogg", hit.GetEntity(), 8.0, 0.8);
 						hit.SetInjuries(hit.GetInjuries() + 0.5);
 						if(hit.GetInjuries() >= 8.0) KillPlayer(hit, p);
 						PlayPlayerAnimation(p, PLAYER_MODEL_ANIMATION_IDLE_ARMED_RIFLE + 2 * rand(0, 1), 1000);
 						SetPlayerInterval(p, 1.2f);
+						hit.SendMessage("Вас ударили");
 					}
 				}
 			}
@@ -1305,10 +1313,13 @@ namespace PlayerCallbacks
 				audio.PlaySoundForPlayer(src, "SFX\\SCP\\096\\Triggered.ogg");
 			}
 
-			destInfo.triggeredPlayers[src.GetIndex()] = graphics.CreateRect(dest, 0, 0, 0.012, 0.022);
-			destInfo.triggeredPlayers[src.GetIndex()].SetColor(255, 0, 0);
-			destInfo.triggeredPlayers[src.GetIndex()].SetAttach(src);
-			destInfo.hasGUI = true;
+			if(destInfo.triggeredPlayers[src.GetIndex()] == NULL)
+			{
+				destInfo.triggeredPlayers[src.GetIndex()] = graphics.CreateRect(dest, 0, 0, 0.012, 0.022);
+				destInfo.triggeredPlayers[src.GetIndex()].SetColor(255, 0, 0);
+				destInfo.triggeredPlayers[src.GetIndex()].SetAttach(src);
+				destInfo.hasGUI = true;
+			}
 		}
 		
 		return false;

@@ -290,7 +290,7 @@ void UpdatePlayerRole(Player p)
 				dest.GetHead().Visible(p.GetHead()) &&
 				p.GetEntity().Distance(dest.GetEntity()) <= 8.0)
 				{
-					if(dest.GetAttach(ATTACH_FACE) == SCRAMBLE_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCRAMBLE_FINE_ATTACHMODEL) || dest.GetAttach(ATTACH_FACE) == SCP268_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCP268_FINE_ATTACHMODEL continue;
+					if(dest.GetAttach(ATTACH_FACE) == SCRAMBLE_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCRAMBLE_FINE_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCP268_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCP268_FINE_ATTACHMODEL) continue;
 					
 					if(!playerInfo.triggered) {
 						p.SetNetworkAnimation(PLAYER_MODEL_ANIMATION_IDLE_ARMED_PISTOL);

@@ -279,6 +279,7 @@ void UpdatePlayerRole(Player p)
 			{
 				Player dest = connPlayers[i];
 				info_Player@ destInfo = GetPlayerInfo(dest);
+
 				if(playerInfo.triggeredPlayers[dest.GetIndex()] == NULL && 
 				!dest.IsDead() && 
 				!dest.IsBlinking() &&
@@ -286,9 +287,10 @@ void UpdatePlayerRole(Player p)
 				p.GetRoom().IsAdjacent(dest.GetRoom()) &&
 				p.GetHead().InView(dest.GetHead()) && 
 				dest.GetHead().InView(p.GetHead()) && 
-				dest.GetHead().Visible(p.GetHead())) 
+				dest.GetHead().Visible(p.GetHead()) &&
+				p.GetEntity().Distance(dest.GetEntity()) <= 8.0)
 				{
-					if(dest.GetAttach(ATTACH_FACE) == SCRAMBLE_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCRAMBLE_FINE_ATTACHMODEL) continue;
+					if(dest.GetAttach(ATTACH_FACE) == SCRAMBLE_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCRAMBLE_FINE_ATTACHMODEL) || dest.GetAttach(ATTACH_FACE) == SCP268_ATTACHMODEL || dest.GetAttach(ATTACH_FACE) == SCP268_FINE_ATTACHMODEL continue;
 					
 					if(!playerInfo.triggered) {
 						p.SetNetworkAnimation(PLAYER_MODEL_ANIMATION_IDLE_ARMED_PISTOL);
@@ -711,7 +713,8 @@ namespace PlayerTimers
 					Player dest = fplayers[index];
 					fplayers.removeAt(index);
 					
-					if(dest != p && !dest.IsDead() && !IsPlayerFriend(dest, p) && p.GetEntity().DistanceSquared(dest.GetEntity()) <= 344.0 && dest.GetRoom().IsAdjacent(p.GetRoom()) && p.GetHead().Visible(dest.GetHead())) {
+					float distanceBetweenPlayers = p.GetEntity().DistanceSquared(dest.GetEntity());
+					if(dest != p && !dest.IsDead() && !IsPlayerFriend(dest, p) && distanceBetweenPlayers <= 344.0 && dest.GetRoom().IsAdjacent(p.GetRoom()) && p.GetHead().Visible(dest.GetHead())) {
 						playerInfo.botState[0] = -5.0;
 						p.GetHead().Point(dest.GetHead());
 						p.SetRotation(p.GetHead().Pitch(true), p.GetHead().Yaw(true));
@@ -1034,7 +1037,7 @@ namespace PlayerCallbacks
 						};
 						
 						// chat.Send(player.GetName() + " " + phrases[rand(0, phrases.size() - 1)]);
-						p.SendMessage("Ты " + phrases[rand(0, phrases.size() - 1)]);
+						player.SendMessage("Ты " + phrases[rand(0, phrases.size() - 1)]);
 						audio.PlaySoundForPlayer(player, "SFX\\SCP\\914\\PlayerDeath.ogg");
 						audio.Play3DSound("SFX\\SCP\\914\\PlayerDeath.ogg", player, 15.0, 0.8);
 						player.Kill(true);
@@ -1229,25 +1232,25 @@ namespace PlayerCallbacks
 					playerInfo.cuffElement.SetColor(150, 150, 150);
 					playerInfo.cuffElement.SetData(formatInt(hit.GetIndex()) + (IsCuffer ? "" : "."));
 				}
-				else if(p.GetAttachItem(ATTACH_WEAPON) == NULL && playerInfo.hitElement == NULL && @playerInfo.pClass != null)
-				{
-					info_Player@ targetPlayerInfo = GetPlayerInfo(hit);
-					if(@hitInfo.pClass != null && playerInfo.pClass.category != CATEGORY_ANOMALY && playerInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && hitInfo.pClass.category != CATEGORY_ANOMALY && hitInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && !IsPlayerFriend(p, hit) && !hit.GetGodmode()) {
-						if(rand(0, 10) == 10) 
-						{
-							p.SendMessage("Ты промахнулся"); // непруха
-							hit.SendMessage("Тебя попытались ударить");
-							return;
-						}
-						p.SendMessage("Ты ударил человека");
-						audio.Play3DSound("SFX/Character/D9341/Damage" + rand(2, 4) + ".ogg", hit.GetEntity(), 8.0, 0.8);
-						hit.SetInjuries(hit.GetInjuries() + 0.3);
-						if(hit.GetInjuries() >= 8.0) KillPlayer(hit, p);
-						PlayPlayerAnimation(p, PLAYER_MODEL_ANIMATION_IDLE_ARMED_RIFLE + 2 * rand(0, 1), 1000);
-						SetPlayerInterval(p, 1.2f);
-						hit.SendMessage("Тебя ударили");
-					}
-				} // TODO: добавить расковывание себя как в сс13 с долгим кд и с шансом неудачи
+				// else if(p.GetAttachItem(ATTACH_WEAPON) == NULL && playerInfo.hitElement == NULL && @playerInfo.pClass != null)
+				// {
+				// 	info_Player@ targetPlayerInfo = GetPlayerInfo(hit);
+				// 	if(@hitInfo.pClass != null && playerInfo.pClass.category != CATEGORY_ANOMALY && playerInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && hitInfo.pClass.category != CATEGORY_ANOMALY && hitInfo.pClass.category != CATEGORY_ANOMALYSTALEMATE && !IsPlayerFriend(p, hit) && !hit.GetGodmode()) {
+				// 		if(rand(0, 10) == 10) 
+				// 		{
+				// 			p.SendMessage("Ты промахнулся"); // непруха
+				// 			hit.SendMessage("Тебя попытались ударить");
+				// 			return;
+				// 		}
+				// 		p.SendMessage("Ты ударил человека");
+				// 		audio.Play3DSound("SFX/Character/D9341/Damage" + rand(2, 4) + ".ogg", hit.GetEntity(), 8.0, 0.8);
+				// 		hit.SetInjuries(hit.GetInjuries() + 0.3);
+				// 		if(hit.GetInjuries() >= 8.0) KillPlayer(hit, p);
+				// 		PlayPlayerAnimation(p, PLAYER_MODEL_ANIMATION_IDLE_ARMED_RIFLE + 2 * rand(0, 1), 1000);
+				// 		SetPlayerInterval(p, 1.2f);
+				// 		hit.SendMessage("Тебя ударили");
+				// 	}
+				// } // TODO: добавить расковывание себя как в сс13 с долгим кд и с шансом неудачи
 			}
 		}
 	}

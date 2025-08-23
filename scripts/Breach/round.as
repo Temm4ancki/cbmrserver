@@ -510,7 +510,8 @@ namespace Round
 		CreateItemPoint(items, world.GetRoomByIdentifier(r_room2_2_ez), vector3(800.0, -48.0, 368), rand(0, 1) == 0 ? "MP5" : "KRISS Vector");
 		CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(-1169.0, -563.0, 721), rand(0, 3) == 0 ? "Level 3 Key Card" : "Remington");
 		CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(14.0, -390, 1437), rand(0, 1) == 0 ? "MP5" : "KRISS Vector");
-		if(rand(0, 3) == 0) CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(14.0, -390, 1437), "Level 4 Key Card");
+		//if(rand(0, 3) == 0) 
+		CreateItemPoint(items, world.GetRoomByIdentifier(r_cont2c_096), vector3(14.0, -390, 1437), "Level 4 Key Card");
 		
 		world.RaycastItems();
 	}

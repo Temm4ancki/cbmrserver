@@ -14,6 +14,7 @@ class info_Player
 	GUIElement[] pYouAre(2);
 	GUIElement RoleInfo;
 	GUIElement hitElement;
+	GUIElement abilityElement;
 	GUIElement cuffElement;
 	int roleTimer;
 	int logicTimer;
@@ -163,6 +164,22 @@ void SetPlayerRole(Player p, Role@ targetRole, int texture = -1)
 		p.SetGodmode(targetRole.godmode);
 		
 		p.SetPositionBounds(NULL);
+
+		switch(playerInfo.pClass.roleid) 
+		{
+			case 0:
+			{
+				break;
+			}
+			case ROLE_SCP_173:
+			{
+				chat.SendPlayer(p, "&colr[0 255 0]" + "----------------------------");
+				chat.SendPlayer(p, "Ваши способности:");
+				chat.SendPlayer(p, "Кнопка 'X' - Отключает свет на большом расстоянии");
+				chat.SendPlayer(p, "&colr[0 255 0]" + "----------------------------");
+				break;
+			}
+		}
 	}
 }
 
@@ -264,6 +281,7 @@ void UpdatePlayerRole(Player p)
 				p.GetRoom().IsAdjacent(dest.GetRoom()) && 
 				!dest.IsBlinking() && 
 				p.GetHitbox().InView(dest.GetHead()) && 
+				p.GetEntity().Distance(dest.GetEntity()) <= 8.0 &&
 				(dest.GetHead().Visible(p.GetEntity()) || dest.GetHead().Visible(p.GetHead()))) {
 					visible = true;
 					break;
@@ -491,13 +509,21 @@ void SetPlayerInterval(Player p, float time)
 	playerInfo.hitElement.SetColor(150, 0, 0);
 }
 
+void SetPlayerIntervalAbility(Player p, float time)
+{
+	info_Player@ playerInfo = GetPlayerInfo(p);
+	PlayerTimers::PlayerAbilityCallback(playerInfo.abilityElement);
+	playerInfo.abilityElement = graphics.CreateProgressBar(p, time, 0.5, 0.85, 0.15, 0.015, true, "PlayerTimers::PlayerAbilityCallback");
+	playerInfo.abilityElement.SetColor(0, 150, 0);
+}
+
 void UpdatePlayerCapture(Player p)
 {
 	info_Player@ playerInfo = GetPlayerInfo(p);
 	if(playerInfo.linkedPlayer != NULL && !playerInfo.linkedPlayer.IsDead() && !p.IsDead()) {
 		float x, y, z, yaw, pitch;
 		p.GetNetworkPosition(x, y, z);
-		p.GetNetworkRotation(pitch, yaw);
+		p.GetNetworkRotation(pitch, yaw); 
 		playerInfo.linkedPlayer.Desync(true);
 		playerInfo.linkedPlayer.SetPosition(x, y, z, p.GetRoom());
 		playerInfo.linkedPlayer.SetRotation(0, yaw);
@@ -912,6 +938,13 @@ namespace PlayerTimers
 		GetPlayerInfo(gui.GetPlayer()).hitElement = NULL;
 		gui.Remove();
 	}
+	void PlayerAbilityCallback(GUIElement gui)
+	{
+		if(gui == NULL) return;
+		
+		GetPlayerInfo(gui.GetPlayer()).abilityElement = NULL;
+		gui.Remove();
+	}
 }
 
 namespace PlayerCallbacks
@@ -934,6 +967,8 @@ namespace PlayerCallbacks
 		RegisterCallback(PlayerUse914_c, OnUse914);
 		RegisterCallback(PlayerAttachesUpdate_c, OnAttachesUpdate);
 		RegisterCallback(PlayerClickGui_c, OnClickElement);
+		RegisterCallback(PlayerClickGui_c, OnClickElement);
+		RegisterCallback(PlayerKeyAction_c, OnPlayerKeyAction);
 	}
 	
 	void OnClickElement(Player player, GUIElement element)
@@ -1052,6 +1087,15 @@ namespace PlayerCallbacks
 					return false;
 				}
 
+				if(command == "roomid")
+				{
+					if(!player.IsDead() && player.IsAdmin())
+					{
+						chat.SendPlayer(player, player.GetRoom().GetName());
+						return false;
+					}
+				}
+
 				if(command == "capture")
 				{
 					if(!player.IsDead() && player.IsAdmin())
@@ -1092,6 +1136,46 @@ namespace PlayerCallbacks
 		}
 		
 		return false;
+	}
+
+	void OnPlayerKeyAction(Player player, int n, int o )
+	{
+		info_Player@ playerInfo = GetPlayerInfo(player);
+
+		if(IsKeyPressed(KEY_X, n, o)) //Способность
+		{
+			if(@playerInfo.pClass != null && playerInfo.abilityElement == NULL) 
+			{
+				switch(playerInfo.pClass.roleid) 
+				{
+					case ROLE_SCP_173: //Выключаем свет
+					{
+						for(int i = 0; i < connPlayers.size(); i++){
+							Player dest = connPlayers[i];
+
+							if(!dest.IsDead()) 
+							{
+								info_Player@ destInfo = GetPlayerInfo(dest);
+								Entity pent = dest.GetEntity();
+								
+								if(player.GetEntity().Distance(dest.GetEntity()) <= 20.0)
+								{
+									audio.PlaySoundForPlayer(dest, "SFX\\Room\\Blackout.ogg");
+								}
+
+								if(!IsPlayerFriend(player, dest))
+								{
+									dest.SetBlinkEffect(1000.0, 2);
+								}
+							}
+
+							SetPlayerIntervalAbility(player, 150.0);
+						}
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	void OnHitPlayer(Player p, Player hit, int mouse, float distance)
@@ -1308,7 +1392,7 @@ namespace PlayerCallbacks
 			KillPlayer(dest, src, headshot ? "in head" : "");
 		}
 
-		if(destInfo.pClass.roleid == ROLE_SCP_096)
+		if(@destInfo.pClass != null && destInfo.pClass.roleid == ROLE_SCP_096)
 		{
 			if(!destInfo.triggered)
 			{

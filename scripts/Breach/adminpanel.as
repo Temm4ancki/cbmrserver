@@ -523,13 +523,13 @@ namespace AdminPanel
 				
 				switch(item) {
 					case 0: 
-						p.ShowDialog(DIALOG_TYPE_MESSAGE, TeleportEveryone, "Телепортировать всех к себе", "Точно телепортировать всех к себе?", "Да", "Отмена");
+						p.ShowDialog(DIALOG_TYPE_MESSAGE, TeleportEveryone, "Teleport everyone", "Are you really sure to teleport everyone?", "Yes", "Cancel");
 						break;
 					case 1:
-						ShowPlayerListForTeleport(p, true); // true означает выбор первого игрока
+						p.ShowDialog(DIALOG_TYPE_INPUT, TeleportPTOP, "Teleport player to player", "Enter player index and player index. Example [1 2]", "Enter", "Cancel");
 						break;
 					case 2:
-						p.ShowDialog(DIALOG_TYPE_INPUT, Unban, "Разбанить игрока", "Введите IP или SteamID", "Разбанить", "Отмена");
+						p.ShowDialog(DIALOG_TYPE_INPUT, Unban, "Unban player", "Enter IP or SteamID", "Unban", "Cancel");
 						break;
 				}
 			}

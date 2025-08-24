@@ -2,3 +2,5 @@
 appcache
 logs
 config
+server.cfg
+admins

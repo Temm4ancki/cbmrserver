@@ -362,10 +362,10 @@ namespace Round
 			int categoryWon = CheckOver();
 			if(categoryWon > 0 || GetTimer() < 1) 
 			{
-				EndRoundGUI[0] = graphics.CreateText(NULL, 8, "THE ROUND HAS FINISHED", 0.5, 0.15, true);
+				EndRoundGUI[0] = graphics.CreateText(NULL, 8, "РАУНД ЗАКОНЧЕН", 0.5, 0.15, true);
 				if(categoryWon > 0) {
 					Category@ wonCategory = Roles::GetCategory(categoryWon);
-					EndRoundGUI[1] = graphics.CreateText(NULL, 8, wonCategory.color.GetFormat() + wonCategory.name + (wonCategory.name == "Stalemate" ? "" : " &r[]WON!"), 0.5, 0.2, true);
+					EndRoundGUI[1] = graphics.CreateText(NULL, 8, wonCategory.color.GetFormat() + wonCategory.name + (wonCategory.name == "Stalemate" ? "" : " &r[]ПОБЕДИЛИ!"), 0.5, 0.2, true);
 				}
 				
 				SetTimer(70);

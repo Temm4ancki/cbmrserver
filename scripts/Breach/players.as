@@ -175,7 +175,7 @@ void SetPlayerRole(Player p, Role@ targetRole, int texture = -1)
 			{
 				chat.SendPlayer(p, "&colr[0 255 0]" + "----------------------------");
 				chat.SendPlayer(p, "Ваши способности:");
-				chat.SendPlayer(p, "Кнопка 'X' - Отключает свет на большом расстоянии");
+				chat.SendPlayer(p, "&colr[0 255 255]" + "Кнопка X" + "&colr[255 255 255]" + " - Отключает свет на большом расстоянии");
 				chat.SendPlayer(p, "&colr[0 255 0]" + "----------------------------");
 				break;
 			}
@@ -281,7 +281,7 @@ void UpdatePlayerRole(Player p)
 				p.GetRoom().IsAdjacent(dest.GetRoom()) && 
 				!dest.IsBlinking() && 
 				p.GetHitbox().InView(dest.GetHead()) && 
-				p.GetEntity().Distance(dest.GetEntity()) <= 8.0 &&
+				//p.GetEntity().Distance(dest.GetEntity()) <= 8.0 &&
 				(dest.GetHead().Visible(p.GetEntity()) || dest.GetHead().Visible(p.GetHead()))) {
 					visible = true;
 					break;
@@ -1150,6 +1150,9 @@ namespace PlayerCallbacks
 				{
 					case ROLE_SCP_173: //Выключаем свет
 					{
+
+						SetPlayerIntervalAbility(player, 100);
+
 						for(int i = 0; i < connPlayers.size(); i++){
 							Player dest = connPlayers[i];
 
@@ -1161,20 +1164,29 @@ namespace PlayerCallbacks
 								if(player.GetEntity().Distance(dest.GetEntity()) <= 20.0)
 								{
 									audio.PlaySoundForPlayer(dest, "SFX\\Room\\Blackout.ogg");
-								}
 
-								if(!IsPlayerFriend(player, dest))
-								{
-									dest.SetBlinkEffect(1000.0, 2);
+									int timerData = CreateTimerData();
+									SetTimerHandle(timerData, player);
+									SetTimerHandle(timerData, dest);
+									CreateTimer(BlinkTimer, 1000, false, timerData);
 								}
 							}
-
-							SetPlayerIntervalAbility(player, 150.0);
 						}
 						break;
 					}
 				}
 			}
+		}
+	}
+
+	void BlinkTimer(Player player, Player dest)
+	{
+		if(!IsPlayerFriend(player, dest) && 
+		dest.GetAttach(ATTACH_FACE) != NVG_ATTACHMODEL && 
+		dest.GetAttach(ATTACH_FACE) != NVG_FINE_ATTACHMODEL && 
+		dest.GetAttach(ATTACH_FACE) != NVG_VERYFINE_ATTACHMODEL)
+		{
+			dest.SetBlinkEffect(1000.0, 2);
 		}
 	}
 

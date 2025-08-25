@@ -1,15 +1,15 @@
-hostname
+hostname LANRP
 port 39100
 chat true
 corpsealivetime 60
-timeout 15
+timeout 60
 maxplayers 60
 adminpassword
-console false
+console true
 voicebitrate 60
 mapseed
-difficulty 0
-gamemode
+difficulty 1
+gamemode Breach
 emptybehaviour 1
 scriptsautoload true
 disablenpcs false
@@ -19,12 +19,14 @@ respawntime 0
 contenturl
 password
 improvedgates false
-mapsize 21
+mapsize 15
 masterserver 65535
 description
-allowjump true
+allowjump false
+fastslots true
 gravity 1.0
-script
+script scripts/Breach/breach.as
+script scripts/Breach/cmds.as
 
 // How to setup Breach gamemode?
 // Copy Breach gamemode from Tools folder and move to preferred folder
@@ -47,7 +49,7 @@ script
 // scriptsautoload - Load scripts from scripts\autoload folder
 // disablenpcs - Disable NPCs and relatives events
 // proximityplayers - the players will see the players at that distance
-// mapbounds - the bounds of map (player XYZ can't go through this value)
+// mapbounds - the bounds of map (player XYZ cant go through this value)
 // respawntime - respawn time in seconds. 0 - disable auto-respawn,
 // contenturl - The server content URL
 // password

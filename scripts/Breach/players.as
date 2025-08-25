@@ -1006,6 +1006,29 @@ namespace PlayerCallbacks
 		{
 			playerInfo.botState[6] = frand(8.0, 15.0);
 		}
+
+		// If more than one real player is connected, kick one bot to make room
+		if (!player.IsBot())
+		{
+			int realCount = 0;
+			for (int i = 0; i < connPlayers.size(); i++)
+			{
+				if (!connPlayers[i].IsBot())
+					realCount++;
+			}
+			if (realCount > 1)
+			{
+				for (int i = 0; i < connPlayers.size(); i++)
+				{
+					Player bp = connPlayers[i];
+					if (bp.IsBot())
+					{
+						bp.Kick(CODE_KICKED);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	void OnDisconnect(Player player)

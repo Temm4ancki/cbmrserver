@@ -38,7 +38,7 @@ void OnWorldUpdate()
 void OnWorldLoaded()
 {
 	Lobby::Load();
-	// Ensure there are exactly 3 bots waiting for players
+
 	int botCount = 0;
 	for (int i = 0; i < connPlayers.size(); i++)
 	{

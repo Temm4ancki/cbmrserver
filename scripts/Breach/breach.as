@@ -7,6 +7,8 @@
 #include "lobby.as"
 #include "bans.as"
 #include "adminpanel.as"
+#include "virtualmap/virtualmap_core.as"
+#include "scp079/scp079.as"
 
 void OnInitialize() // Initialize when script loads. Don't use WORLD functions there.
 {
@@ -20,6 +22,9 @@ void OnInitialize() // Initialize when script loads. Don't use WORLD functions t
 	
 	CreateTimer(Round::Update, 1000, true);
 	CreateTimer(Lobby::Update, 1000, true);
+	
+	InitializeVirtualMap();
+	InitializeSCP079();
 	
 	server.disablenpcs = true; // Forcely set disablenpcs flag
 	server.gamemode = "Breach";
@@ -38,6 +43,7 @@ void OnWorldUpdate()
 void OnWorldLoaded()
 {
 	Lobby::Load();
+	OnVirtualMapWorldLoaded();
 
 	int botCount = 0;
 	for (int i = 0; i < connPlayers.size(); i++)

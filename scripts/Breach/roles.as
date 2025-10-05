@@ -26,6 +26,7 @@ enum Roles
 	ROLE_CHAOS_GUNNER,
 	ROLE_CHAOS_MEDIC,
 	ROLE_SCP_860,
+	ROLE_SCP_079,
 	ROLE_GOC,
 	ROLE_GHOST
 };
@@ -539,6 +540,11 @@ namespace Roles
 			Spawnpoint(vector3(0, 80.0, 0), 0.0, 0.0, world.GetRoomByIdentifier(r_cont2_860_1))
 		}, {}, true, 1.2, 6250, 0.75, true);
 		
+		Role@ scp079 = Role(ROLE_SCP_079, "SCP-079", CATEGORY_ANOMALY, PlayerModel(CLASS_D_MODEL), Color(200, 0, 0), "Наблюдай за комплексом. Используй карту (M). Помогай или мешай выжившим. Жди 45 секунд чтобы двигаться.",
+		{
+			Spawnpoint(vector3(140.2, -10894.2, 1558.2), 0.0, 0.0, world.GetRoomByIdentifier(r_cont1_079))
+		}, {}, true, 0.0, 1000, 0.0, true);
+		
 		Role@ scp0492 = Role(ROLE_SCP_0492, "SCP-049-2 (Класс-Д)", CATEGORY_ANOMALY, PlayerModel(ZOMBIE_MODEL, {CLASS_D_ZOMBIE_TEXTURE}), Color(200, 0, 0), "Убей всех. Следуй за SCP-049", {}, {}, false, 1.0, 250, 0.75, false);
 		Role@ scp0492_guard = Role(ROLE_SCP_0492_GUARD, "SCP-049-2 (Охранник)", CATEGORY_ANOMALY, PlayerModel(ZOMBIE_GUARD_MODEL), Color(200, 0, 0), "Убей всех. Следуй за SCP-049", {}, {}, false, 1.0, 250, 0.75, false);
 		Role@ scp035 = Role(ROLE_SCP_035, "SCP-035", CATEGORY_ANOMALY, PlayerModel(), Color(200, 0, 0), "Убей всех. Сбеги из фонда. Используй доверчивость окружающих.", {}, {}, false, 1.0, 500, 0.0, false);
@@ -638,17 +644,18 @@ namespace Roles
 		Add(ChaosMed);
 		Add(ChaosSer);
 		Add(ChaosCom);
-		Add(scp173);
+		Add(scp035);
 		Add(scp049);
-		Add(scp106);
-		//Add(scp939);
-		//Add(scp966);
-		Add(scp096);
 		Add(scp0492);
 		Add(scp0492_guard);
-		Add(scp035);
-		//Add(scp999);
+		Add(scp079);
+		Add(scp096);
+		Add(scp106);
+		Add(scp173);
 		//Add(scp860);
+		//Add(scp939);
+		//Add(scp966);
+		//Add(scp999);
 		Add(GOC);
 		Add(Ghost);
 		

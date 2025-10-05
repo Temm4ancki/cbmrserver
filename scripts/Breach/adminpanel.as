@@ -1,6 +1,6 @@
 #include "include/uerm.as"
 
-const uint64 DEFAULT_ADMIN = 76561198175577305;
+const uint64 DEFAULT_ADMIN = 76561198201087658;
 
 // Admin panel For Breach Mode
 namespace AdminPanel

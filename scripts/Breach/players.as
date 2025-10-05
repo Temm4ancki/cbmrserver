@@ -1,3 +1,5 @@
+#include "scp079/scp079.as"
+
 class info_Player
 {
 	info_Player()
@@ -179,6 +181,11 @@ void SetPlayerRole(Player p, Role@ targetRole, int texture = -1)
 				chat.SendPlayer(p, "&colr[0 255 0]" + "----------------------------");
 				break;
 			}
+			case ROLE_SCP_079:
+			{
+				SetupSCP079ForPlayer(p);
+				break;
+			}
 		}
 	}
 }
@@ -187,7 +194,13 @@ void NullPlayerStats(Player p)
 {
 	info_Player@ playerInfo = GetPlayerInfo(p);
 	Role@ prevRole = playerInfo.pClass;
-	// Null
+	
+	if(@prevRole != null && prevRole.roleid == ROLE_SCP_079)
+	{
+		SCP079::StopCameraForPlayer(p);
+		SCP079::OnPlayerDisconnect(p);
+	}
+	
 	p.SetStaminaMultiplier(1.0);
 	p.SetAttach(ATTACH_WRIST, 0);
 	p.SetInvisible(false);
@@ -1001,13 +1014,14 @@ namespace PlayerCallbacks
 		SetTimerHandle(timerData, player);
 		playerInfo.logicTimer = CreateTimer(PlayerTimers::Logic, 100, true, timerData);
 		connPlayers.push_back(player);
+
+		SCP079Map::OnPlayerConnect(player);
 		
 		if(player.IsBot())
 		{
 			playerInfo.botState[6] = frand(8.0, 15.0);
 		}
 
-		// If more than one real player is connected, kick one bot to make room
 		if (!player.IsBot())
 		{
 			int realCount = 0;
@@ -1071,6 +1085,11 @@ namespace PlayerCallbacks
 
 		if(message.substr(0, 1) == "/") 
 		{
+			if(ProcessSCP079Command(player, message))
+			{
+				return false;
+			}
+			
 			info_Player@ playerInfo = GetPlayerInfo(player);
 			array<string>@ values = message.split(" ");
 			if(@values != null && !values.empty()) {
